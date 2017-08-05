@@ -86,18 +86,24 @@ int main(int argc, char **argv) {
   int b_rows, b_columns = 0;
 
   //Declaramos los archivos a leer
-  //FILE *file1 = fopen(argv[1], "r");
-  //FILE *file2 = fopen(argv[2], "r");
-  FILE *file1 = fopen("matrix_a.txt", "r");
-  FILE *file2 = fopen("matrix_b.txt", "r");
+  FILE *file1,*file2;
+
+  if(argc > 1){//Para controlar la lectura por linea de comandos
+    file1 = fopen(argv[1], "r");
+    file2 = fopen(argv[2], "r");
+    printf("Archivos:\n");
+    printf("%s\n",argv[1]);
+    printf("%s\n",argv[2]);
+  }else{
+    //Declaramos los archivos a leer
+    file1 = fopen("matrix_a.txt", "r");
+    file2 = fopen("matrix_b.txt", "r");
+  }
 
   if(file1==NULL){//Comprobamos la lectura exitosa
     printf("Error, no se encuentra el archivo\n");
   }else{
     printf("Multiplicacion de Matrices\n");
-    //printf("Archivos:\n");
-    //printf("%s\n",argv[1]);
-    //printf("%s\n",argv[2]);
 
     //Obtenemos el numero de filas y columnas de ambas matrices
     fscanf(file1, "%d\n%d\n",&a_rows,&a_columns);
