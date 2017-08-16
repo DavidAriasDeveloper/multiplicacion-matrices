@@ -10,13 +10,13 @@
 #include "time.h"
 
 //Funcion producto punto
-int pointProduct(a_size,b_size,a[a_size],b[b_size]){
-  int result = 0;
-  for(int i=0;i<a_size;i++){
-    result+= a[i]*b[i];
-  }
-  return result;
-}
+// int pointProduct(a_size,b_size,a[a_size],b[b_size]){
+//   int result = 0;
+//   for(int i=0;i<a_size;i++){
+//     result+= a[i]*b[i];
+//   }
+//   return result;
+// }
 
 //Funcion para multiplicar matrices
 int multiplyMatrix(int a_rows,
