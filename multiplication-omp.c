@@ -126,7 +126,7 @@ int main(int argc, char **argv) {
       printMatrix(a_rows,b_columns,product);
 
       //Datos de tiempo
-      secs = (double)(t_begin - t_end) / CLOCKS_PER_SEC;
+      secs = (double)(t_end - t_begin) / CLOCKS_PER_SEC;
       printf("\nLa operacion se realizo en %.16g milisegundos\n", secs * 1000.0);
 
       //Exportamos la matriz a un fichero de texto
