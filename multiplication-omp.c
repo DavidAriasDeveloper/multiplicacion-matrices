@@ -9,8 +9,6 @@
 #include "stdlib.h"
 #include "time.h"
 
-//Funcion para medir el tiempo
-
 //Funcion producto punto
 int pointProduct(a_size,b_size,a[a_size],b[b_size]){
   int result = 0;
