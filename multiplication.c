@@ -6,6 +6,7 @@
 
 #include "stdio.h"
 #include "stdlib.h"
+#include "time.h"
 
 //Funcion para multiplicar matrices
 int multiplyMatrix(int a_rows,
