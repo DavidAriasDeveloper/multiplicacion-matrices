@@ -6,16 +6,6 @@
 
 #include "stdio.h"
 #include "stdlib.h"
-#include "windows.h"
-
-//Funcion para medir el tiempo
-/* retorna "a - b" en segundos */
-double performancecounter_diff(LARGE_INTEGER *a, LARGE_INTEGER *b)
-{
-  LARGE_INTEGER freq;
-  QueryPerformanceFrequency(&freq);
-  return (double)(a->QuadPart - b->QuadPart) / (double)freq.QuadPart;
-}
 
 //Funcion para multiplicar matrices
 int multiplyMatrix(int a_rows,
@@ -78,7 +68,7 @@ void printMatrix(int rows,int columns,int matrix[rows][columns]){
 
 int main(int argc, char **argv) {
   //Variables de tiempo
-  LARGE_INTEGER t_ini, t_fin;
+  clock_t t_begin, t_end;
   double secs;
   //Declaramos los elementos de la matriz a
   int a_rows, a_columns = 0;
@@ -126,16 +116,16 @@ int main(int argc, char **argv) {
     if(a_columns == b_rows){
       int product[a_rows][b_columns];//Se declara la matriz producto
 
-      QueryPerformanceCounter(&t_ini);//Se establece el tiempo inicial de medicion
+      t_begin = clock();
       //Realizamos la multiplicacion
       product[a_rows][b_columns] = multiplyMatrix(a_rows,a_columns,a_matrix,b_rows,b_columns,b_matrix,product);
-      QueryPerformanceCounter(&t_fin);//Se establece el tiempo final de medicion
+      t_end = clock();
 
       printf("\nMatriz Producto: Filas: %d, Columnas: %d\n",a_rows,b_columns);
       printMatrix(a_rows,b_columns,product);
 
       //Datos de tiempo
-      secs = performancecounter_diff(&t_fin, &t_ini);
+      secs = (double)(t_end - t_begin) / CLOCKS_PER_SEC;
       printf("\nLa operacion se realizo en %.16g milisegundos\n", secs * 1000.0);
 
       //Exportamos la matriz a un fichero de texto
