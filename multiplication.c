@@ -9,10 +9,10 @@
 #include "stdlib.h"
 #include "time.h"
 
-#define NRA 62                 /* number of rows in matrix A */
-#define NCA 15                 /* number of columns in matrix A */
-#define NRB 15                 /* number of rows in matrix A */
-#define NCB 7                  /* number of columns in matrix B */
+#define NRA 200                 /* number of rows in matrix A */
+#define NCA 300                 /* number of columns in matrix A */
+#define NRB 300                 /* number of rows in matrix A */
+#define NCB 150                  /* number of columns in matrix B */
 
 //Funcion para multiplicar matrices
 int multiplyMatrix(int a_rows,
