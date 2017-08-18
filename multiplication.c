@@ -31,22 +31,22 @@ int multiplyMatrix(int a_rows,
   int a_row,a_col,b_col=0;
   int tid;
   printf("\nMultiplicacion\n");
-  #pragma omp parallel for private(tid)
-  for(a_row=0;a_row<a_rows;a_row++){
-    tid = omp_get_thread_num();
-    //printf("Operacion desde el hilo %d\n", tid);
-    #pragma omp parallel for private(tid)
-    for(b_col=0;b_col<b_cols;b_col++){
-      //printf("Operacion desde el hilo %d\n", tid);
-      int temp_cell = 0;
-      #pragma omp parallel for private(tid)
-      for(a_col=0;a_col<a_cols;a_col++){
-        //printf("Operacion desde el hilo %d\n", tid);
-        temp_cell= temp_cell + (a_matrix[a_row][a_col]*b_matrix[a_col][b_col]);
-      }
-      product[a_row][b_col]=temp_cell;
-    }
-  }
+  // #pragma omp parallel for private(tid)
+  // for(a_row=0;a_row<a_rows;a_row++){
+  //   tid = omp_get_thread_num();
+  //   //printf("Operacion desde el hilo %d\n", tid);
+  //   #pragma omp parallel for private(tid)
+  //   for(b_col=0;b_col<b_cols;b_col++){
+  //     //printf("Operacion desde el hilo %d\n", tid);
+  //     int temp_cell = 0;
+  //     #pragma omp parallel for private(tid)
+  //     for(a_col=0;a_col<a_cols;a_col++){
+  //       //printf("Operacion desde el hilo %d\n", tid);
+  //       temp_cell= temp_cell + (a_matrix[a_row][a_col]*b_matrix[a_col][b_col]);
+  //     }
+  //     product[a_row][b_col]=temp_cell;
+  //   }
+  //}
   return 0;
 }
 
@@ -93,6 +93,9 @@ int main(int argc, char **argv) {
   int a_rows, a_columns = 0;
   //Declaramos los elementos de la matriz b
   int b_rows, b_columns = 0;
+
+  printf("\nNúmero de procesadores: %d\n", omp_get_num_procs());
+  printf("\nNúmero de hilos: %d\n", omp_get_thread_num());
 
   //Declaramos los archivos a leer
   FILE *file1,*file2;
