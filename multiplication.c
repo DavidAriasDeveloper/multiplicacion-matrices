@@ -12,7 +12,7 @@
 #define NRA 2000                 /* number of rows in matrix A */
 #define NCA 3000                 /* number of columns in matrix A */
 #define NRB 3000                 /* number of rows in matrix A */
-#define NCB 1500                  /* number of columns in matrix B */
+#define NCB 2500                  /* number of columns in matrix B */
 
 //Funcion para multiplicar matrices
 int multiplyMatrix(int a_rows,
