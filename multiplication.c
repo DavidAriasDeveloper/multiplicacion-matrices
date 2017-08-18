@@ -25,14 +25,11 @@ int multiplyMatrix(int a_rows,
     tid = omp_get_thread_num();
     printf("\nMultiplicacion\n");
     #pragma omp for schedule (static, chunk){
-      for (a_row=0; a_row<a_rows; a_row++){
+      for (a_row=0; a_row<a_rows; a_row++)
         printf("Hilo=%d -> fila=%d\n",tid,a_row);
-        for(b_col=0; b_col<b_cols; b_col++){
-          for (a_col=0; a_col<a_cols; a_col++){
-            product[i][j] += a_matrix[i][k] * b_matrix[k][j];
-          }
-        }
-      }
+        for(b_col=0; b_col<b_cols; b_col++)
+          for (a_col=0; a_col<a_cols; a_col++)
+            product[a_row][b_col] += a_matrix[a_row][a_col] * b_matrix[a_col][b_col];
     }
   }
   // #pragma omp parallel for private(tid)
