@@ -30,7 +30,7 @@ int multiplyMatrix(int a_rows,
     tid = omp_get_thread_num();
     nthreads = omp_get_num_threads();
 
-    printf("Numero de hilos: %s\n",nthreads);
+    printf("Numero de hilos: %d\n",nthreads);
 
     #pragma omp for schedule (static, 10)
     for (i=0; i<NRA; i++)
