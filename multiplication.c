@@ -54,7 +54,7 @@ void fillMatrix(FILE *file,int rows,int columns,int matrix[rows][columns]){
 }
 //Function para inicializar matriz automatica
 void fillAutoMatrix(int rows,int columns,int matrix[rows][columns]){
-  #pragma omp for schedule (static, chunk)
+  #pragma omp for schedule (static, 10)
   for (i=0; i<rows; i++)
     for (j=0; j<columns; j++)
       matrix[i][j]= i+j;
@@ -110,7 +110,7 @@ int main(int argc, char **argv) {
   printf("\nMatriz B: Filas: %d, Columnas: %d\n",NRB,NCB);
   printMatrix(NRB,NCB,b_matrix);
 
-  if(a_columns == b_rows){
+  if(NCA == NRB){
     t_begin = clock();
     //Realizamos la multiplicacion
     multiplyMatrix(NRA,NCA,a_matrix,NRB,NCB,b_matrix,product);
