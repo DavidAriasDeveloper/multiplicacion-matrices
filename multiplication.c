@@ -29,8 +29,6 @@ int multiplyMatrix(int a_rows,
                     int product[a_rows][b_cols]){
 
   int a_row,a_col,b_col=0;
-
-  printArray(a_matrix);
   // #pragma omp parallel for private(tid)
   // for(a_row=0;a_row<a_rows;a_row++){
   //   tid = omp_get_thread_num();
@@ -146,6 +144,7 @@ int main(int argc, char **argv) {
 
       t_begin = clock();
       //Realizamos la multiplicacion
+      printArray(a_matrix);
       product[a_rows][b_columns] = multiplyMatrix(a_rows,a_columns,a_matrix,b_rows,b_columns,b_matrix,product);
       t_end = clock();
 
