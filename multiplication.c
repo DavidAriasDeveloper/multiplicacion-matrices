@@ -11,7 +11,7 @@
 
 #define NRA 62                 /* number of rows in matrix A */
 #define NCA 15                 /* number of columns in matrix A */
-#define NRB 15                 /* number of columns in matrix A */
+#define NRB 15                 /* number of rows in matrix A */
 #define NCB 7                  /* number of columns in matrix B */
 
 //Funcion para multiplicar matrices
@@ -23,7 +23,17 @@ int multiplyMatrix(int a_rows,
                     int b_matrix[b_rows][b_cols],
                     int product[a_rows][b_cols]){
 
-  int a_row,a_col,b_col=0;
+  int i,j,k=0;
+
+  #pragma omp for schedule (static, chunk)
+  for (i=0; i<NRA; i++)
+    {
+    printf("Thread=%d did row=%d\n",tid,i);
+    for(j=0; j<NCB; j++)
+      for (k=0; k<NCA; k++)
+        product[i][j] += a_matrix[i][k] * b_matrix[k][j];
+    }
+  }
   // #pragma omp parallel for private(tid)
   // for(a_row=0;a_row<a_rows;a_row++){
   //   tid = omp_get_thread_num();
