@@ -10,13 +10,14 @@
 #include "time.h"
 
 //Funcion producto punto
-// int pointProduct(a_size,b_size,a[a_size],b[b_size]){
-//   int result = 0;
-//   for(int i=0;i<a_size;i++){
-//     result+= a[i]*b[i];
-//   }
-//   return result;
-// }
+int pointProduct(a_size,b_size,a[a_size],b[b_size]){
+  int result = 0;
+  #pragma omp parallel for
+  for(int i=0;i<a_size;i++){
+    result+= a[i]*b[i];
+  }
+  return result;
+}
 
 //Funcion para multiplicar matrices
 int multiplyMatrix(int a_rows,
@@ -28,7 +29,19 @@ int multiplyMatrix(int a_rows,
                     int product[a_rows][b_cols]){
 
   int a_row,a_col,b_col=0;
-  printf("Codigo de multiplicacion\n");
+  printf("\nMultiplicacion\n");
+  #pragma omp parallel for
+  for(a_row=0;a_row<a_rows;a_row++){
+    #pragma omp parallel for
+    for(b_col=0;b_col<b_cols;b_col++){
+      int temp_cell = 0;
+      #pragma omp parallel for
+      for(a_col=0;a_col<a_cols;a_col++){
+        temp_cell= temp_cell + (a_matrix[a_row][a_col]*b_matrix[a_col][b_col]);
+      }
+      product[a_row][b_col]=temp_cell;
+    }
+  }
   return 0;
 }
 
