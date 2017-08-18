@@ -9,16 +9,6 @@
 #include "stdlib.h"
 #include "time.h"
 
-//Funcion producto punto
-int pointProduct(int a_size,int b_size,int a[a_size],int b[b_size]){
-  int result = 0;
-  #pragma omp parallel for
-  for(int i=0;i<a_size;i++){
-    result+= a[i]*b[i];
-  }
-  return result;
-}
-
 //Funcion para multiplicar matrices
 int multiplyMatrix(int a_rows,
                     int a_cols,
@@ -29,8 +19,16 @@ int multiplyMatrix(int a_rows,
                     int product[a_rows][b_cols]){
 
   int a_row,a_col,b_col=0;
-  int tid;
+  int chunk = 10;
+
   printf("\nMultiplicacion\n");
+  #pragma omp for schedule (static, chunk)
+  for (a_row=0; a_row<a_rows; a_row++){
+    printf("Thread=%d did row=%d\n",tid,i);
+    for(b_col=0; b_col<b_cols; b_col++)
+      for (a_col=0; a_col<a_cols; a_col++)
+        product[i][j] += a[i][k] * b[k][j];
+  }
   // #pragma omp parallel for private(tid)
   // for(a_row=0;a_row<a_rows;a_row++){
   //   tid = omp_get_thread_num();
@@ -95,7 +93,6 @@ int main(int argc, char **argv) {
   int b_rows, b_columns = 0;
 
   printf("\nNúmero de procesadores: %d\n", omp_get_num_procs());
-  printf("\nNúmero de hilos: %d\n", omp_get_thread_num());
 
   //Declaramos los archivos a leer
   FILE *file1,*file2;
