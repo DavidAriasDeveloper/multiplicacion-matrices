@@ -11,6 +11,7 @@
 
 #define NRA 62                 /* number of rows in matrix A */
 #define NCA 15                 /* number of columns in matrix A */
+#define NRB 15                 /* number of columns in matrix A */
 #define NCB 7                  /* number of columns in matrix B */
 
 //Funcion para multiplicar matrices
@@ -96,27 +97,27 @@ int main(int argc, char **argv) {
 
   //Definimos las matrices
   int a_matrix[NRA][NCA];
-  int b_matrix[NCA][NCB];
+  int b_matrix[NRB][NCB];
   int product[NRA][NCB];//Se declara la matriz producto
 
   //Llenamos las matrices
   fillAutoMatrix(NRA,NCA,a_matrix);
-  fillAutoMatrix(NCA,NCB,b_matrix);
+  fillAutoMatrix(NRB,NCB,b_matrix);
 
   //Imprimimos las matrices
-  printf("\nMatriz A: Filas: %d, Columnas: %d\n",a_rows, a_columns);
-  printMatrix(a_rows,a_columns,a_matrix);
-  printf("\nMatriz B: Filas: %d, Columnas: %d\n",b_rows, b_columns);
-  printMatrix(b_rows,b_columns,b_matrix);
+  printf("\nMatriz A: Filas: %d, Columnas: %d\n",NRA,NCA);
+  printMatrix(NRA,NCA,a_matrix);
+  printf("\nMatriz B: Filas: %d, Columnas: %d\n",NRB,NCB);
+  printMatrix(NRB,NCB,b_matrix);
 
   if(a_columns == b_rows){
     t_begin = clock();
     //Realizamos la multiplicacion
-    product[a_rows][b_columns] = multiplyMatrix(a_rows,a_columns,a_matrix,b_rows,b_columns,b_matrix,product);
+    multiplyMatrix(NRA,NCA,a_matrix,NRB,NCB,b_matrix,product);
     t_end = clock();
 
-    printf("\nMatriz Producto: Filas: %d, Columnas: %d\n",a_rows,b_columns);
-    printMatrix(a_rows,b_columns,product);
+    printf("\nMatriz Producto: Filas: %d, Columnas: %d\n",NRA,NCB);
+    printMatrix(NRA,NCB,product);
 
     //Datos de tiempo
     secs = (double)(t_end - t_begin) / CLOCKS_PER_SEC;
@@ -124,7 +125,7 @@ int main(int argc, char **argv) {
 
     //Exportamos la matriz a un fichero de texto
     FILE *export = fopen("matrix_product.txt","w");
-    exportMatrix(export,a_rows,b_columns,product);
+    exportMatrix(export,NRA,NCB,product);
     fclose(export);
   }else{
     printf("\nNo es posible realizar la multiplicacion\n");
