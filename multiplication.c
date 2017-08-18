@@ -29,14 +29,19 @@ int multiplyMatrix(int a_rows,
                     int product[a_rows][b_cols]){
 
   int a_row,a_col,b_col=0;
+  int tid;
   printf("\nMultiplicacion\n");
-  #pragma omp parallel for
+  #pragma omp parallel for private(tid)
   for(a_row=0;a_row<a_rows;a_row++){
-    #pragma omp parallel for
+    tid = omp_get_thread_num();
+    printf("Operacion desde el hilo %d\n", tid);
+    #pragma omp parallel for private(tid)
     for(b_col=0;b_col<b_cols;b_col++){
+      printf("Operacion desde el hilo %d\n", tid);
       int temp_cell = 0;
-      #pragma omp parallel for
+      #pragma omp parallel for private(tid)
       for(a_col=0;a_col<a_cols;a_col++){
+        printf("Operacion desde el hilo %d\n", tid);
         temp_cell= temp_cell + (a_matrix[a_row][a_col]*b_matrix[a_col][b_col]);
       }
       product[a_row][b_col]=temp_cell;
