@@ -9,6 +9,16 @@
 #include "stdlib.h"
 #include "time.h"
 
+//Funcion para obtener una determinada fila de una matriz
+int getRow(int index,int row,int cols,int matrix[rows][cols]){
+  printf("Retornamos una fila\n");
+}
+
+int getCol(int index,int row,int cols,int matrix[rows][cols]){
+  printf("Retornamos una columna\n");
+  return matrix[index];
+}
+
 //Funcion para multiplicar matrices
 int multiplyMatrix(int a_rows,
                     int a_cols,
@@ -19,21 +29,8 @@ int multiplyMatrix(int a_rows,
                     int product[a_rows][b_cols]){
 
   int a_row,a_col,b_col=0;
-  int tid,chunk = 10;
 
-  #pragma omp parallel shared(a_matrix,b_matrix,product,chunk) private(tid,a_row,b_col,a_col)
-  {
-    tid = omp_get_thread_num();
-    printf("\nMultiplicacion\n");
-    #pragma omp for schedule (static, chunk)
-      for (a_row=0; a_row<a_rows; a_row++)
-      {
-        printf("Hilo=%d -> fila=%d\n",tid,a_row);
-        for(b_col=0; b_col<b_cols; b_col++)
-          for (a_col=0; a_col<a_cols; a_col++)
-            product[a_row][b_col] += a_matrix[a_row][a_col] * b_matrix[a_col][b_col];
-      }
-  }
+  printMatrix(a_matrix);
   // #pragma omp parallel for private(tid)
   // for(a_row=0;a_row<a_rows;a_row++){
   //   tid = omp_get_thread_num();
@@ -86,6 +83,13 @@ void printMatrix(int rows,int columns,int matrix[rows][columns]){
     }
     printf("\n");
   }
+}
+
+void printArray(int length,int array[length]){
+  for(int i=0;i<length;i++){
+    printf("[%d]", array[i]);
+  }
+  printf("\n");
 }
 
 int main(int argc, char **argv) {
