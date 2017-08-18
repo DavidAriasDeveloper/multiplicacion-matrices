@@ -30,7 +30,7 @@ int multiplyMatrix(int a_rows,
 
   int a_row,a_col,b_col=0;
 
-  printMatrix(a_matrix);
+  printArray(a_matrix);
   // #pragma omp parallel for private(tid)
   // for(a_row=0;a_row<a_rows;a_row++){
   //   tid = omp_get_thread_num();
