@@ -25,7 +25,9 @@ int multiplyMatrix(int a_rows,
 
   int	tid, nthreads, i, j, k, chunk;
 
-  #pragma omp parallel shared(a_matrix,b_matrix,product,nthreads,10) private(tid,i,j,k)
+  chunk = 10;
+
+  #pragma omp parallel shared(a_matrix,b_matrix,product,nthreads,chunk) private(tid,i,j,k)
   {
     tid = omp_get_thread_num();
     nthreads = omp_get_num_threads();
