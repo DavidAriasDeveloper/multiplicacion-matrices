@@ -21,10 +21,12 @@ int multiplyMatrix(int a_rows,
   int a_row,a_col,b_col=0;
   int tid,chunk = 10;
 
-  #pragma omp parallel shared(a_matrix,b_matrix,product,chunk) private(tid,a_row,b_col,a_col){
+  #pragma omp parallel shared(a_matrix,b_matrix,product,chunk) private(tid,a_row,b_col,a_col)
+  {
     tid = omp_get_thread_num();
     printf("\nMultiplicacion\n");
-    #pragma omp for schedule (static, chunk){
+    #pragma omp for schedule (static, chunk)
+    {
       for (a_row=0; a_row<a_rows; a_row++)
         printf("Hilo=%d -> fila=%d\n",tid,a_row);
         for(b_col=0; b_col<b_cols; b_col++)
