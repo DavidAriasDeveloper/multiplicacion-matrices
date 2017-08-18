@@ -119,7 +119,7 @@ int main(int argc, char **argv) {
   //Definimos las matrices
   int a_matrix[a_rows][a_columns];
   int b_matrix[b_rows][b_columns];
-  int product[a_rows][b_columns];//Se declara la matriz producto
+  int product[a_rows][b_columns];
 
   if(argc > 1){
     //Llenamos las matrices
@@ -130,9 +130,6 @@ int main(int argc, char **argv) {
     fillAutoMatrix(NRA,NCA,a_matrix);
     fillAutoMatrix(NRB,NCB,b_matrix);
   }
-
-
-
 
   //Imprimimos las matrices
   printf("\nMatriz A: Filas: %d, Columnas: %d\n",a_rows, a_columns);
@@ -162,9 +159,10 @@ int main(int argc, char **argv) {
   }else{
     printf("\nNo es posible realizar la multiplicacion\n");
   }
-
-  fclose(file1);
-  fclose(file2);
+  if(argc > 1){
+    fclose(file1);
+    fclose(file2);
+  }
 
   return 0;
 }
