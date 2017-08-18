@@ -10,7 +10,7 @@
 #include "time.h"
 
 //Funcion producto punto
-int pointProduct(a_size,b_size,a[a_size],b[b_size]){
+int pointProduct(int a_size,int b_size,int a[a_size],int b[b_size]){
   int result = 0;
   #pragma omp parallel for
   for(int i=0;i<a_size;i++){
