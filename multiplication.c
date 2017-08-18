@@ -27,10 +27,10 @@ int multiplyMatrix(int a_rows,
     printf("\nMultiplicacion\n");
     #pragma omp for schedule (static, chunk){
       for (a_row=0; a_row<a_rows; a_row++){
-        printf("Thread=%d did row=%d\n",tid,i);
+        printf("Hilo=%d -> fila=%d\n",tid,a_row);
         for(b_col=0; b_col<b_cols; b_col++){
           for (a_col=0; a_col<a_cols; a_col++){
-            product[i][j] += a[i][k] * b[k][j];
+            product[i][j] += a_matrix[i][k] * b_matrix[k][j];
           }
         }
       }
