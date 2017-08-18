@@ -23,17 +23,23 @@ int multiplyMatrix(int a_rows,
                     int b_matrix[b_rows][b_cols],
                     int product[a_rows][b_cols]){
 
-  int i,j,k=0;
+  int	tid, nthreads, i, j, k, chunk;
 
-  #pragma omp for schedule (static, 10)
-  for (i=0; i<NRA; i++)
-    {
-    printf("Thread=%d did row=%d\n",tid,i);
-    for(j=0; j<NCB; j++)
-      for (k=0; k<NCA; k++)
-        product[i][j] += a_matrix[i][k] * b_matrix[k][j];
-    }
-  }
+  #pragma omp parallel shared(a_matrix,b_matrix,product,nthreads,10) private(tid,i,j,k)
+  {
+    tid = omp_get_thread_num();
+    nthreads = omp_get_num_threads();
+
+    printf("Numero de hilos: %s\n",nthreads);
+
+    #pragma omp for schedule (static, 10)
+    for (i=0; i<NRA; i++)
+      {
+      printf("Thread=%d -> Fila=%d\n",tid,i);
+      for(j=0; j<NCB; j++)
+        for (k=0; k<NCA; k++)
+          product[i][j] += a_matrix[i][k] * b_matrix[k][j];
+      }
   // #pragma omp parallel for private(tid)
   // for(a_row=0;a_row<a_rows;a_row++){
   //   tid = omp_get_thread_num();
@@ -49,7 +55,9 @@ int multiplyMatrix(int a_rows,
   //     }
   //     product[a_row][b_col]=temp_cell;
   //   }
-  //}
+  //
+  }
+
   return 0;
 }
 
