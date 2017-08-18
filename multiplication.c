@@ -25,7 +25,7 @@ int multiplyMatrix(int a_rows,
 
   int i,j,k=0;
 
-  #pragma omp for schedule (static, chunk)
+  #pragma omp for schedule (static, 10)
   for (i=0; i<NRA; i++)
     {
     printf("Thread=%d did row=%d\n",tid,i);
