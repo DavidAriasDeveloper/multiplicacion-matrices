@@ -83,7 +83,7 @@ void printMatrix(int rows,int columns,int matrix[rows][columns]){
   }
 }
 
-void printArray(int length,int array[length]){
+void printArray(int length,int rows,int columns,int array[rows][columns]){
   for(int i=0;i<length;i++){
     printf("[%d]", array[i]);
   }
@@ -144,7 +144,7 @@ int main(int argc, char **argv) {
 
       t_begin = clock();
       //Realizamos la multiplicacion
-      printArray(a_rows*a_columns,a_matrix);
+      printArray(a_rows*a_columns,a_rows,a_columns,a_matrix);
       product[a_rows][b_columns] = multiplyMatrix(a_rows,a_columns,a_matrix,b_rows,b_columns,b_matrix,product);
       t_end = clock();
 
