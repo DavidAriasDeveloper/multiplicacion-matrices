@@ -144,7 +144,7 @@ int main(int argc, char **argv) {
 
       t_begin = clock();
       //Realizamos la multiplicacion
-      printArray(a_matrix);
+      printArray(a_rows*a_columns,a_matrix);
       product[a_rows][b_columns] = multiplyMatrix(a_rows,a_columns,a_matrix,b_rows,b_columns,b_matrix,product);
       t_end = clock();
 
