@@ -54,6 +54,7 @@ void fillMatrix(FILE *file,int rows,int columns,int matrix[rows][columns]){
 }
 //Function para inicializar matriz automatica
 void fillAutoMatrix(int rows,int columns,int matrix[rows][columns]){
+  int i,j = 0;
   #pragma omp for schedule (static, 10)
   for (i=0; i<rows; i++)
     for (j=0; j<columns; j++)
