@@ -19,15 +19,19 @@ int multiplyMatrix(int a_rows,
                     int product[a_rows][b_cols]){
 
   int a_row,a_col,b_col=0;
-  int chunk = 10;
+  int tid,chunk = 10;
 
-  printf("\nMultiplicacion\n");
-  #pragma omp for schedule (static, chunk)
-  for (a_row=0; a_row<a_rows; a_row++){
-    printf("Thread=%d did row=%d\n",tid,i);
-    for(b_col=0; b_col<b_cols; b_col++)
-      for (a_col=0; a_col<a_cols; a_col++)
-        product[i][j] += a[i][k] * b[k][j];
+  #pragma omp parallel shared(a_matrix,b_matrix,c_matrix,chunk) private(tid,a_row,b_col,a_col)
+  {
+    tid = omp_get_thread_num();
+    printf("\nMultiplicacion\n");
+    #pragma omp for schedule (static, chunk){
+    for (a_row=0; a_row<a_rows; a_row++)
+      printf("Thread=%d did row=%d\n",tid,i);
+      for(b_col=0; b_col<b_cols; b_col++)
+        for (a_col=0; a_col<a_cols; a_col++)
+          product[i][j] += a[i][k] * b[k][j];
+        }
   }
   // #pragma omp parallel for private(tid)
   // for(a_row=0;a_row<a_rows;a_row++){
