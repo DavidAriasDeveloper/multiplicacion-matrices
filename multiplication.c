@@ -23,43 +23,22 @@ int multiplyMatrix(int a_rows,
                     int b_matrix[b_rows][b_cols],
                     int product[a_rows][b_cols]){
 
-  int	tid, nthreads, i, j, k, chunk;
+  int	tid, nthreads, i, j, k;
 
-  chunk = 10;
+  tid = omp_get_thread_num();
+  nthreads = omp_get_num_threads();
 
-  #pragma omp parallel shared(a_matrix,b_matrix,product,nthreads,chunk) private(tid,i,j,k)
-  {
-    tid = omp_get_thread_num();
-    nthreads = omp_get_num_threads();
+  printf("Numero de hilos: %d\n",nthreads);
 
-    printf("Numero de hilos: %d\n",nthreads);
-
-    #pragma omp for schedule (static, 10)
-    for (i=0; i<NRA; i++)
-      {
-      printf("Thread=%d -> Fila=%d\n",tid,i);
-      for(j=0; j<NCB; j++)
-        for (k=0; k<NCA; k++)
-          product[i][j] += a_matrix[i][k] * b_matrix[k][j];
+  #pragma omp for schedule (static, 10)
+  for (i=0; i<NRA; i++){
+    printf("Thread=%d -> Fila=%d\n",tid,i);
+    for(j=0; j<NCB; j++){
+      for (k=0; k<NCA; k++){
+        product[i][j] += a_matrix[i][k] * b_matrix[k][j];
       }
-  // #pragma omp parallel for private(tid)
-  // for(a_row=0;a_row<a_rows;a_row++){
-  //   tid = omp_get_thread_num();
-  //   //printf("Operacion desde el hilo %d\n", tid);
-  //   #pragma omp parallel for private(tid)
-  //   for(b_col=0;b_col<b_cols;b_col++){
-  //     //printf("Operacion desde el hilo %d\n", tid);
-  //     int temp_cell = 0;
-  //     #pragma omp parallel for private(tid)
-  //     for(a_col=0;a_col<a_cols;a_col++){
-  //       //printf("Operacion desde el hilo %d\n", tid);
-  //       temp_cell= temp_cell + (a_matrix[a_row][a_col]*b_matrix[a_col][b_col]);
-  //     }
-  //     product[a_row][b_col]=temp_cell;
-  //   }
-  //
+    }
   }
-
   return 0;
 }
 
@@ -76,9 +55,11 @@ void fillMatrix(FILE *file,int rows,int columns,int matrix[rows][columns]){
 void fillAutoMatrix(int rows,int columns,int matrix[rows][columns]){
   int i,j = 0;
   #pragma omp for schedule (static, 10)
-  for (i=0; i<rows; i++)
-    for (j=0; j<columns; j++)
+  for (i=0; i<rows; i++){
+    for (j=0; j<columns; j++){
       matrix[i][j]= i+j;
+    }
+  }
 }
 
 //Funcion para escribir matrices en un fichero
@@ -134,7 +115,7 @@ int main(int argc, char **argv) {
   if(NCA == NRB){
     t_begin = clock();
     //Realizamos la multiplicacion
-    multiplyMatrix(NRA,NCA,a_matrix,NRB,NCB,b_matrix,product);
+    //multiplyMatrix(NRA,NCA,a_matrix,NRB,NCB,b_matrix,product);
     t_end = clock();
 
     printf("\nMatriz Producto: Filas: %d, Columnas: %d\n",NRA,NCB);
