@@ -8,25 +8,25 @@
 #include "stdlib.h"
 #include "time.h"
 
-#define NRA 2000                 /* number of rows in matrix A */
-#define NCA 3000                 /* number of columns in matrix A */
-#define NRB 3000                 /* number of rows in matrix A */
-#define NCB 2500                  /* number of columns in matrix B */
+#define NRA 100                 /* number of rows in matrix A */
+#define NCA 200                 /* number of columns in matrix A */
+#define NRB 200                 /* number of rows in matrix A */
+#define NCB 150                  /* number of columns in matrix B */
 
 //Funcion para multiplicar matrices
-int multiplyMatrix(int a_rows,
+double multiplyMatrix(int a_rows,
                     int a_cols,
-                    int a_matrix[a_rows][a_cols],
+                    double a_matrix[a_rows][a_cols],
                     int b_rows,
                     int b_cols,
-                    int b_matrix[b_rows][b_cols],
-                    int product[a_rows][b_cols]){
+                    double b_matrix[b_rows][b_cols],
+                    double product[a_rows][b_cols]){
 
   int a_row,a_col,b_col=0;
 
   for(a_row=0;a_row<a_rows;a_row++){//Ciclo para moverse entre las filas de la matriz a
     for(b_col=0;b_col<b_cols;b_col++){//Ciclo para moverse entre las columnas de b
-      int temp_cell = 0;//Variable para almacenar los datos de la celda en la matriz producto
+      double temp_cell = 0;//Variable para almacenar los datos de la celda en la matriz producto
       for(a_col=0;a_col<a_cols;a_col++){//Ciclo para moverse entre las columnas de a
         temp_cell= temp_cell + (a_matrix[a_row][a_col]*b_matrix[a_col][b_col]);
         //printf("a[%d][%d]xb[%d][%d]=%d\n", a_row,a_col,a_col,b_col,a_matrix[a_row][a_col]*b_matrix[a_col][b_col]);
@@ -38,29 +38,29 @@ int multiplyMatrix(int a_rows,
 }
 
 //Funcion para llenar matrices
-void fillMatrix(FILE *file,int rows,int columns,int matrix[rows][columns]){
+void fillMatrix(FILE *file,int rows,int columns,double matrix[rows][columns]){
   for(int i=0;i<rows;i++){
     for(int j=0;j<columns;j++){
-      fscanf(file,"%d,", &matrix[i][j]);
+      fscanf(file,"%lf,", &matrix[i][j]);
     }
   }
   return;
 }
 
 //Funcion para llenar matrices automaticamente
-void fillAutoMatrix(int rows,int columns,int matrix[rows][columns]){
+void fillAutoMatrix(int rows,int columns,double matrix[rows][columns]){
   int i,j = 0;
   for (i=0; i<rows; i++)
     for (j=0; j<columns; j++)
-      matrix[i][j]= i+j;
+      matrix[i][j]= rand();
 }
 
 //Funcion para escribir matrices en un fichero
-void exportMatrix(FILE *file,int rows,int columns,int matrix[rows][columns]){
+void exportMatrix(FILE *file,int rows,int columns,double matrix[rows][columns]){
   fprintf(file, "%d\n%d\n", rows,columns);
   for(int i=0;i<rows;i++){
     for(int j=0;j<columns;j++){
-      fprintf(file,"%d", matrix[i][j]);
+      fprintf(file,"%lf", matrix[i][j]);
       if(j+1 < columns){//Para conservar el formato especificado
         fprintf(file, ",");
       }
@@ -71,11 +71,11 @@ void exportMatrix(FILE *file,int rows,int columns,int matrix[rows][columns]){
 }
 
 //Funcion para imprimir matrices
-void printMatrix(int rows,int columns,int matrix[rows][columns]){
+void printMatrix(int rows,int columns,double matrix[rows][columns]){
   printf("Matriz %dx%d: \n",rows,columns);
   for(int i=0;i<rows;i++){
     for(int j=0;j<columns;j++){
-      printf("[%d]", matrix[i][j]);
+      printf("[%lf]", matrix[i][j]);
     }
     printf("\n");
   }
@@ -116,10 +116,11 @@ int main(int argc, char **argv) {
   }
   printf("Multiplicacion de Matrices\n");
 
+  printf("%d,%d,%d,%d\n",a_rows,a_columns,b_rows,b_columns );
   //Definimos las matrices
-  int a_matrix[a_rows][a_columns];
-  int b_matrix[b_rows][b_columns];
-  int product[a_rows][b_columns];
+  double a_matrix[a_rows][a_columns];
+  double b_matrix[b_rows][b_columns];
+  double product[a_rows][b_columns];
 
   if(argc > 1){
     //Llenamos las matrices
@@ -132,13 +133,13 @@ int main(int argc, char **argv) {
   }
 
   //Imprimimos las matrices
-  printf("\nMatriz A: Filas: %d, Columnas: %d\n",a_rows, a_columns);
-  printMatrix(a_rows,a_columns,a_matrix);
-  printf("\nMatriz B: Filas: %d, Columnas: %d\n",b_rows, b_columns);
-  printMatrix(b_rows,b_columns,b_matrix);
+  // printf("\nMatriz A: Filas: %d, Columnas: %d\n",a_rows, a_columns);
+  // printMatrix(a_rows,a_columns,a_matrix);
+  // printf("\nMatriz B: Filas: %d, Columnas: %d\n",b_rows, b_columns);
+  // printMatrix(b_rows,b_columns,b_matrix);
 
   if(a_columns == b_rows){
-    int product[a_rows][b_columns];//Se declara la matriz producto
+    double product[a_rows][b_columns];//Se declara la matriz producto
 
     t_begin = clock();
     //Realizamos la multiplicacion
