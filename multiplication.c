@@ -49,9 +49,10 @@ void parallel_multiplyMatrix(int a_rows,
 
 
   int	tid, nthreads, i, j, k;
+  int temp_cell;
   int chunk = 10;
 
-  #pragma omp parallel shared(a_matrix,b_matrix,product) private(i,j,k,tid)
+  #pragma omp parallel shared(a_matrix,b_matrix,product) private(i,j,k,tid,temp_cell)
   {
     tid = omp_get_thread_num();
     nthreads = omp_get_num_threads();
@@ -62,9 +63,11 @@ void parallel_multiplyMatrix(int a_rows,
     for (i=0; i<NRA; i++){
       //printf("Thread=%d -> Fila=%d\n",tid,i);
       for(j=0; j<NCB; j++){
+        temp_cell=0;
         for (k=0; k<NCA; k++){
-          product[i][j] += a_matrix[i][k] * b_matrix[k][j];
+          temp_cell += a_matrix[i][k] * b_matrix[k][j];
         }
+        product[i][j] = temp_cell;
       }
     }
   }
