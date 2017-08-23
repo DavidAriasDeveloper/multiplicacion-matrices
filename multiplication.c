@@ -7,14 +7,15 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include "time.h"
+#include "omp.h"
 
-#define NRA 100                 /* number of rows in matrix A */
-#define NCA 200                 /* number of columns in matrix A */
-#define NRB 200                 /* number of rows in matrix A */
-#define NCB 150                  /* number of columns in matrix B */
+#define NRA 10                 /* number of rows in matrix A */
+#define NCA 20                 /* number of columns in matrix A */
+#define NRB 20                 /* number of rows in matrix A */
+#define NCB 15                  /* number of columns in matrix B */
 
 //Funcion para multiplicar matrices
-double multiplyMatrix(int a_rows,
+double sequential_multiplyMatrix(int a_rows,
                     int a_cols,
                     double a_matrix[a_rows][a_cols],
                     int b_rows,
@@ -37,6 +38,34 @@ double multiplyMatrix(int a_rows,
   }
 }
 
+//Funcion para multiplicar matrices
+int parallel_multiplyMatrix(int a_rows,
+                    int a_cols,
+                    double a_matrix[a_rows][a_cols],
+                    int b_rows,
+                    int b_cols,
+                    double b_matrix[b_rows][b_cols],
+                    double product[a_rows][b_cols]){
+
+  int	tid, nthreads, i, j, k;
+
+  tid = omp_get_thread_num();
+  nthreads = omp_get_num_threads();
+
+  printf("Numero de hilos: %d\n",nthreads);
+
+  #pragma omp for schedule (static, 10)
+  for (i=0; i<NRA; i++){
+    //printf("Thread=%d -> Fila=%d\n",tid,i);
+    for(j=0; j<NCB; j++){
+      for (k=0; k<NCA; k++){
+        product[i][j] += a_matrix[i][k] * b_matrix[k][j];
+      }
+    }
+  }
+  return 0;
+}
+
 //Funcion para llenar matrices
 void fillMatrix(FILE *file,int rows,int columns,double matrix[rows][columns]){
   for(int i=0;i<rows;i++){
@@ -52,7 +81,18 @@ void fillAutoMatrix(int rows,int columns,double matrix[rows][columns]){
   int i,j = 0;
   for (i=0; i<rows; i++)
     for (j=0; j<columns; j++)
-      matrix[i][j]= rand();
+      matrix[i][j]= i+j;
+}
+
+//Function para inicializar matriz automatica
+void parallel_fillAutoMatrix(int rows,int columns,double matrix[rows][columns]){
+  int i,j = 0;
+  #pragma omp for schedule (static, 10)
+  for (i=0; i<rows; i++){
+    for (j=0; j<columns; j++){
+      matrix[i][j]= i+j;
+    }
+  }
 }
 
 //Funcion para escribir matrices en un fichero
@@ -70,12 +110,24 @@ void exportMatrix(FILE *file,int rows,int columns,double matrix[rows][columns]){
   return;
 }
 
+//Funcion de comparacion de matrices
+int compareMatrix(int a_row,int a_col,int b_row,int b_col,double a[a_row][a_col],double b[b_row][b_col]){
+  for(int row = 0;row<a_row;row++){
+    for(int col = 0;col<a_col;col++){
+      if(a[row][col]!=b[row][col]){
+        return 0;
+      }
+    }
+  }
+  return 1;
+}
+
 //Funcion para imprimir matrices
 void printMatrix(int rows,int columns,double matrix[rows][columns]){
   printf("Matriz %dx%d: \n",rows,columns);
   for(int i=0;i<rows;i++){
     for(int j=0;j<columns;j++){
-      printf("[%lf]", matrix[i][j]);
+      printf("[%d]",(int)matrix[i][j]);
     }
     printf("\n");
   }
@@ -83,8 +135,12 @@ void printMatrix(int rows,int columns,double matrix[rows][columns]){
 
 int main(int argc, char **argv) {
   //Variables de tiempo
-  clock_t t_begin, t_end;
-  double secs;
+  clock_t seq_t_begin, seq_t_end;
+  clock_t par_t_begin, par_t_end;
+
+  double seq_secs;
+  double par_secs;
+
   //Declaramos los elementos de la matriz a
   int a_rows, a_columns = 0;
   //Declaramos los elementos de la matriz b
@@ -120,7 +176,6 @@ int main(int argc, char **argv) {
   //Definimos las matrices
   double a_matrix[a_rows][a_columns];
   double b_matrix[b_rows][b_columns];
-  double product[a_rows][b_columns];
 
   if(argc > 1){
     //Llenamos las matrices
@@ -128,8 +183,8 @@ int main(int argc, char **argv) {
     fillMatrix(file2,b_rows,b_columns,b_matrix);
   }else{
     //Llenamos las matrices automaticamente
-    fillAutoMatrix(NRA,NCA,a_matrix);
-    fillAutoMatrix(NRB,NCB,b_matrix);
+    parallel_fillAutoMatrix(NRA,NCA,a_matrix);
+    parallel_fillAutoMatrix(NRB,NCB,b_matrix);
   }
 
   //Imprimimos las matrices
@@ -139,23 +194,37 @@ int main(int argc, char **argv) {
   // printMatrix(b_rows,b_columns,b_matrix);
 
   if(a_columns == b_rows){
-    double product[a_rows][b_columns];//Se declara la matriz producto
+    double sequential_product[a_rows][b_columns];//Se declara la matriz producto
+    double parallel_product[a_rows][b_columns];
 
-    t_begin = clock();
+    seq_t_begin = clock();
     //Realizamos la multiplicacion
-    product[a_rows][b_columns] = multiplyMatrix(a_rows,a_columns,a_matrix,b_rows,b_columns,b_matrix,product);
-    t_end = clock();
+    sequential_product[a_rows][b_columns] = sequential_multiplyMatrix(a_rows,a_columns,a_matrix,b_rows,b_columns,b_matrix,sequential_product);
+    seq_t_end = clock();
+
+    par_t_begin = clock();
+    //Realizamos la multiplicacion
+    parallel_product[a_rows][b_columns] = parallel_multiplyMatrix(a_rows,a_columns,a_matrix,b_rows,b_columns,b_matrix,parallel_product);
+    par_t_end = clock();
 
     printf("\nMatriz Producto: Filas: %d, Columnas: %d\n",a_rows,b_columns);
-    printMatrix(a_rows,b_columns,product);
+    printMatrix(a_rows,b_columns,sequential_product);
+    printMatrix(a_rows,b_columns,parallel_product);
+
+    if(!compareMatrix(a_rows,b_columns,a_rows,b_columns,sequential_product,parallel_product)){
+      printf("\nLas matrices coinciden\n");
+    }
 
     //Datos de tiempo
-    secs = (double)(t_end - t_begin) / CLOCKS_PER_SEC;
-    printf("\nLa operacion se realizo en %.16g milisegundos\n", secs * 1000.0);
+    seq_secs = (double)(seq_t_end - seq_t_begin) / CLOCKS_PER_SEC;
+    par_secs = (double)(par_t_end - par_t_begin) / CLOCKS_PER_SEC;
+
+    printf("\nSecuencial: La operacion se realizo en %.16g milisegundos\n", seq_secs * 1000.0);
+    printf("\nParalelo: La operacion se realizo en %.16g milisegundos\n", par_secs * 1000.0);
 
     //Exportamos la matriz a un fichero de texto
     FILE *export = fopen("matrix_product.txt","w");
-    exportMatrix(export,a_rows,b_columns,product);
+    exportMatrix(export,a_rows,b_columns,sequential_product);
     fclose(export);
   }else{
     printf("\nNo es posible realizar la multiplicacion\n");
