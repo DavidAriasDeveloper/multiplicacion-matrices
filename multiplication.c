@@ -9,10 +9,10 @@
 #include "time.h"
 #include "omp.h"
 
-#define NRA 2000                 /* number of rows in matrix A */
-#define NCA 2000                 /* number of columns in matrix A */
-#define NRB 2000                 /* number of rows in matrix A */
-#define NCB 2000                  /* number of columns in matrix B */
+#define NRA 500                 /* number of rows in matrix A */
+#define NCA 500                 /* number of columns in matrix A */
+#define NRB 500                 /* number of rows in matrix A */
+#define NCB 500                  /* number of columns in matrix B */
 
 //Funcion para multiplicar matrices
 void sequential_multiplyMatrix(int a_rows,
@@ -59,14 +59,19 @@ void parallel_multiplyMatrix(int a_rows,
     printf("Numero de hilos: %d\n",nthreads);
 
     #pragma omp for schedule (dynamic, chunk)
-    for (i=0; i<NRA; i++){
+    for (i=0; i<NRA; i++)
+    {
       //printf("Thread=%d -> Fila=%d\n",tid,i);
-      for(j=0; j<NCB; j++){
+      for(j=0; j<NCB; j++)
+      {
         temp_cell=0;
-        for (k=0; k<NCA; k++){
+        #pragma omp parallel for reduction(+:temp_cell)
+        for (k=0; k<NCA; k++)
+        {
           temp_cell += a_matrix[i][k] * b_matrix[k][j];
         }
         product[i][j] = temp_cell;
+        //printf("Hilo %d calcula %d,%d\n",tid,i,j);
       }
     }
   }
@@ -75,6 +80,14 @@ void parallel_multiplyMatrix(int a_rows,
 void allocMatrix(int rows,int columns,double **matrix){
   for(int i = 0; i < rows; i++)
     matrix[i] = (double *)malloc(columns*sizeof(double));
+}
+
+void freeMatrix(int rows,double **matrix){
+  int row;
+  for(row = 0;row<rows;row++){
+    free(matrix[row]);
+  }
+  free(matrix);
 }
 
 //Funcion para llenar matrices
@@ -244,6 +257,10 @@ int main(int argc, char **argv) {
     FILE *export = fopen("matrix_product.txt","w");
     exportMatrix(export,a_rows,b_columns,sequential_product);
     fclose(export);
+    freeMatrix(a_rows,sequential_product);
+    freeMatrix(a_rows,parallel_product);
+    freeMatrix(a_rows,a_matrix);
+    freeMatrix(b_rows,b_matrix);
   }else{
     printf("\nNo es posible realizar la multiplicacion\n");
   }
