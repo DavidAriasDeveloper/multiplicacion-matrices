@@ -4,15 +4,16 @@
   Universidad Tecnologica de Pereira
 */
 
-#include "stdio.h"
-#include "stdlib.h"
-#include "time.h"
-#include "omp.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/time.h>
+#include <time.h>
+#include <omp.h>
 
-#define NRA 500                 /* number of rows in matrix A */
-#define NCA 500                 /* number of columns in matrix A */
-#define NRB 500                 /* number of rows in matrix A */
-#define NCB 500                  /* number of columns in matrix B */
+#define NRA 800                 /* number of rows in matrix A */
+#define NCA 800                 /* number of columns in matrix A */
+#define NRB 800                 /* number of rows in matrix A */
+#define NCB 800                  /* number of columns in matrix B */
 
 //Funcion para multiplicar matrices
 void sequential_multiplyMatrix(int a_rows,
@@ -56,7 +57,7 @@ void parallel_multiplyMatrix(int a_rows,
     tid = omp_get_thread_num();
     nthreads = omp_get_num_threads();
 
-    printf("Numero de hilos: %d\n",nthreads);
+    //printf("Numero de hilos: %d\n",nthreads);
 
     #pragma omp for schedule (dynamic, chunk)
     for (i=0; i<NRA; i++)
@@ -65,7 +66,6 @@ void parallel_multiplyMatrix(int a_rows,
       for(j=0; j<NCB; j++)
       {
         temp_cell=0;
-        #pragma omp parallel for reduction(+:temp_cell)
         for (k=0; k<NCA; k++)
         {
           temp_cell += a_matrix[i][k] * b_matrix[k][j];
@@ -101,7 +101,7 @@ void fillMatrix(FILE *file,int rows,int columns,double **matrix){
 
 //Funcion para llenar matrices automaticamente
 void fillAutoMatrix(int rows,int columns,double **matrix){
-  srand((unsigned)time(NULL));
+  srand(time(NULL));
   int i,j = 0;
   for (i=0; i<rows; i++)
     for (j=0; j<columns; j++)
@@ -160,8 +160,7 @@ void printMatrix(int rows,int columns,double matrix[rows][columns]){
 
 int main(int argc, char **argv) {
   //Variables de tiempo
-  clock_t seq_t_begin, seq_t_end;
-  clock_t par_t_begin, par_t_end;
+  struct timeval seq_t_begin,seq_t_end,par_t_begin, par_t_end;
 
   double seq_secs;
   double par_secs;
@@ -228,15 +227,25 @@ int main(int argc, char **argv) {
     allocMatrix(a_rows,b_columns,sequential_product);
     allocMatrix(a_rows,b_columns,parallel_product);
 
-    seq_t_begin = clock();
+    printf("\n------Inicia algoritmo secuencial------\n");
+    gettimeofday(&seq_t_begin, NULL);
     //Realizamos la multiplicacion
     sequential_multiplyMatrix(a_rows,a_columns,a_matrix,b_rows,b_columns,b_matrix,sequential_product);
-    seq_t_end = clock();
+    gettimeofday(&seq_t_end, NULL);
 
-    par_t_begin = clock();
+    seq_secs = ((seq_t_end.tv_sec  - seq_t_begin.tv_sec) * 1000000u + seq_t_end.tv_usec - seq_t_begin.tv_usec) / 1.e6;
+
+    printf("\nSecuencial: La operacion se realizo en %.16g milisegundos\n", seq_secs * 1000.0);
+
+    printf("\n------Inicia algoritmo paralelo------\n");
+    gettimeofday(&par_t_begin, NULL);
     //Realizamos la multiplicacion
     parallel_multiplyMatrix(a_rows,a_columns,a_matrix,b_rows,b_columns,b_matrix,parallel_product);
-    par_t_end = clock();
+    gettimeofday(&par_t_end, NULL);
+
+    par_secs = ((par_t_end.tv_sec  - par_t_begin.tv_sec) * 1000000u + par_t_end.tv_usec - par_t_begin.tv_usec) / 1.e6;
+
+    printf("\nParalelo: La operacion se realizo en %.16g milisegundos\n", par_secs * 1000.0);
 
     printf("\nMatriz Producto: Filas: %d, Columnas: %d\n",a_rows,b_columns);
     //printMatrix(a_rows,b_columns,sequential_product);
@@ -247,11 +256,7 @@ int main(int argc, char **argv) {
     }
 
     //Datos de tiempo
-    seq_secs = (double)(seq_t_end - seq_t_begin) / CLOCKS_PER_SEC;
-    par_secs = (double)(par_t_end - par_t_begin) / CLOCKS_PER_SEC;
 
-    printf("\nSecuencial: La operacion se realizo en %.16g milisegundos\n", seq_secs * 1000.0);
-    printf("\nParalelo: La operacion se realizo en %.16g milisegundos\n", par_secs * 1000.0);
 
     //Exportamos la matriz a un fichero de texto
     FILE *export = fopen("matrix_product.txt","w");

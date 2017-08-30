@@ -12,9 +12,9 @@
 #include <stdlib.h>
 #include "time.h"
 
-#define NRA 200                 /* number of rows in matrix A */
-#define NCA 200                 /* number of columns in matrix A */
-#define NCB 200                  /* number of columns in matrix B */
+#define NRA 800                 /* number of rows in matrix A */
+#define NCA 800                 /* number of columns in matrix A */
+#define NCB 800                  /* number of columns in matrix B */
 
 int main (int argc, char *argv[])
 {
@@ -22,9 +22,9 @@ int	tid, nthreads, i, j, k, chunk;
 clock_t par_t_begin, par_t_end;
 double par_secs;
 
-double	a[NRA][NCA],           /* matrix A to be multiplied */
-	b[NCA][NCB],           /* matrix B to be multiplied */
-	c[NRA][NCB];           /* result matrix C */
+double **a = (double **)malloc(NRA*sizeof(double*));           /* matrix A to be multiplied */
+double **b = (double **)malloc(NCA*sizeof(double*));           /* matrix B to be multiplied */
+double **c = (double **)malloc(NRA*sizeof(double*));           /* result matrix C */
 
 chunk = 10;                    /* set loop iteration chunk size */
 
@@ -41,14 +41,17 @@ chunk = 10;                    /* set loop iteration chunk size */
   /*** Initialize matrices ***/
   #pragma omp for schedule (static, chunk)
   for (i=0; i<NRA; i++)
+    a[i]=(double *)malloc(NCA*sizeof(double));
     for (j=0; j<NCA; j++)
       a[i][j]= i+j;
   #pragma omp for schedule (static, chunk)
   for (i=0; i<NCA; i++)
+    b[i]=(double *)malloc(NCB*sizeof(double));
     for (j=0; j<NCB; j++)
       b[i][j]= i*j;
   #pragma omp for schedule (static, chunk)
   for (i=0; i<NRA; i++)
+    c[i]=(double *)malloc(NCB*sizeof(double));
     for (j=0; j<NCB; j++)
       c[i][j]= 0;
 
